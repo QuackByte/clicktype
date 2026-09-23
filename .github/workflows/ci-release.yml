@@ -87,10 +87,15 @@ jobs:
           keychain_password="$(openssl rand -hex 32)"
           security create-keychain -p "$keychain_password" "$keychain"
           security unlock-keychain -p "$keychain_password" "$keychain"
+          security list-keychains -d user -s "$keychain"
+          security default-keychain -d user -s "$keychain"
           security import "$certificate" -k "$keychain" \
             -P "$DEVELOPER_ID_P12_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security > /dev/null
           security set-key-partition-list -S apple-tool:,apple: -s \
             -k "$keychain_password" "$keychain" > /dev/null
+          security find-identity -v -p codesigning "$keychain"
+          security find-identity -v -p codesigning "$keychain" | \
+            grep -q F1626DEC4B4687725ABD9D28165CA6F52B9E38F9
           mkdir -p "$RUNNER_TEMP/Export"
           ditto "$RUNNER_TEMP/ClickType.xcarchive/Products/Applications/ClickType.app" \
             "$RUNNER_TEMP/Export/ClickType.app"
