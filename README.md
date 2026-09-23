@@ -1,22 +1,48 @@
 # ClickType
 
-A native macOS menu bar app that types the current plain-text clipboard as keyboard events when you click its menu bar icon.
+![ClickType app icon](Assets.xcassets/AppIcon.appiconset/icon_128.png)
 
-## Run
+ClickType is a small macOS menu bar app that types the plain-text contents of your clipboard into the app you were using. Copy text, put the caret where you want it, and click the keycap icon in the menu bar. ClickType sends keyboard events character by character, which can help when ordinary paste is unavailable.
 
-1. Download the latest `ClickType-*-macOS.zip` from [GitHub Releases](https://github.com/QuackByte/clicktype/releases), extract it, and move `ClickType.app` to Applications. Alternatively, open `ClickType.xcodeproj` in Xcode and run the ClickType scheme.
-2. Copy text and place the caret in a text field. Then click the ClickType keycap icon in the menu bar.
-3. On the first click, macOS may ask you to grant ClickType **Accessibility** access in System Settings → Privacy & Security → Accessibility. Grant access, then click the icon again. macOS may require an app restart after granting access.
-4. Right-click (or Option-click) the menu bar icon for Accessibility options, **Run at Login**, or to quit. Move `ClickType.app` to Applications before enabling Run at Login so its path stays stable.
+## Download and install
 
-The app reads the clipboard when its menu bar icon is clicked. Ordinary clicks elsewhere do not trigger typing. Images and other non-text clipboard items are ignored. Some apps may ignore synthetic Unicode keyboard events, and secure or privileged fields may reject them.
+**Requires macOS 13 or later on Apple Silicon.** The current release is an `arm64` build.
 
-## Build
+1. Download [ClickType 1.0](https://github.com/QuackByte/clicktype/releases/latest) and extract `ClickType-1.0.0-macOS.zip`.
+2. Move `ClickType.app` to your Applications folder and open it. The release is signed with a Developer ID certificate and notarized by Apple.
+3. On first use, grant **Accessibility** access if macOS asks. You can also open **System Settings → Privacy & Security → Accessibility** and enable ClickType there. Restart ClickType if the permission does not take effect immediately.
 
-Xcode 15 or later is required. The checked-in Xcode project is generated from `project.yml` with XcodeGen. The target uses AppKit, SwiftUI, Core Graphics, and ServiceManagement, has no third-party runtime dependencies, and does not use App Sandbox because it needs to send keystrokes to other apps. The release target uses bundle ID `dev.quackbyte.clicktype`, team `435MC3786D`, automatic signing, and version `1.0` (build `1`). Contributors can override the team and signing settings locally.
+Keep the app in Applications before turning on **Run at Login** so macOS can find it at the same path later.
 
-## Distribution
+## Use
 
-GitHub Releases provides the Developer ID signed and notarized macOS app. The current keyboard-typing feature requires Accessibility access and posts keyboard events to other apps. Apple requires App Sandbox for Mac App Store distribution and restricts assistive Accessibility APIs in sandboxed apps. Do not submit the current build to the Mac App Store or enable App Sandbox without first implementing and testing a compatible design.
+1. Copy some text.
+2. Place the caret in a text field in another app.
+3. Left-click ClickType's keycap icon in the menu bar. ClickType returns to the previous app and types the clipboard text.
 
-Xcode Cloud can archive and sign macOS apps for Developer ID distribution. Its first workflow must be configured in Xcode and granted access to the Git repository.
+Right-click or Option-click the menu bar icon to open the menu. From there you can type the clipboard now, check or request Accessibility access, open Accessibility settings, turn Run at Login on or off, or quit. If macOS requires approval for Run at Login, follow the link in that menu to Login Items settings.
+
+ClickType reads the clipboard when you ask it to type. It ignores images and other clipboard contents without plain text. Newlines are sent as Return and tabs as Tab.
+
+## Privacy and limitations
+
+- Clipboard text is held briefly in memory while ClickType types it. The app does not save the text, send it over a network, or include analytics.
+- Accessibility permission is needed to send keyboard events to other apps. Grant it only if you are comfortable with that capability; the source code is available in [`Sources`](Sources).
+- Some apps do not accept synthetic Unicode keyboard events. Secure or privileged fields may reject them. Typing long text takes time because characters are sent in sequence.
+- The current build is distributed through GitHub Releases. Its Accessibility-based typing feature is incompatible with the sandbox required for Mac App Store apps.
+
+## Build from source
+
+Open [`ClickType.xcodeproj`](ClickType.xcodeproj) in Xcode and run the `ClickType` scheme. Xcode 15 or later is required. You can also build an unsigned local copy from Terminal:
+
+```sh
+xcodebuild -project ClickType.xcodeproj -scheme ClickType \
+  -configuration Debug -derivedDataPath build/DerivedData \
+  CODE_SIGNING_ALLOWED=NO build
+```
+
+The checked-in Xcode project is generated from [`project.yml`](project.yml) with XcodeGen. The app uses AppKit, SwiftUI, Core Graphics, and ServiceManagement, with no third-party runtime dependencies. Release signing is configured for bundle ID `dev.quackbyte.clicktype` and team `435MC3786D`; contributors can override signing settings for their own builds. Publishing a release requires Developer ID signing and Apple notarization.
+
+## License
+
+ClickType is available under the [MIT License](LICENSE).
