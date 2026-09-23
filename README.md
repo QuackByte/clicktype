@@ -10,7 +10,7 @@ ClickType is a small macOS menu bar app that types the plain-text contents of yo
 
 **Requires macOS 13 or later on Apple Silicon.** The current release is an `arm64` build.
 
-1. Download [ClickType 1.0](https://github.com/QuackByte/clicktype/releases/latest) and extract `ClickType-1.0.0-macOS.zip`.
+1. Download the [latest ClickType release](https://github.com/QuackByte/clicktype/releases/latest) and extract its `ClickType-*-macOS.zip` file.
 2. Move `ClickType.app` to your Applications folder and open it. The release is signed with a Developer ID certificate and notarized by Apple.
 3. On first use, grant **Accessibility** access if macOS asks. You can also open **System Settings → Privacy & Security → Accessibility** and enable ClickType there. Restart ClickType if the permission does not take effect immediately.
 
@@ -47,9 +47,9 @@ The checked-in Xcode project is generated from [`project.yml`](project.yml) with
 
 ## CI and releases
 
-[GitHub Actions](.github/workflows/ci-release.yml) builds the app and runs unit tests on pull requests, pushes to `main`, and version tags. A tag such as `v1.0.1` starts the release job only after tests pass. It exports a Developer ID signed Apple Silicon app, notarizes and staples it, checks it with Gatekeeper, and uploads the ZIP and its SHA-256 checksum to GitHub Releases. The release notes include a changelog of commits since the previous version tag.
+[GitHub Actions](.github/workflows/ci-release.yml) builds the app and runs unit tests on pull requests, pushes to `main`, and version tags. A tag such as `v1.0.1` starts the release job only after tests pass. It signs an Apple Silicon app with Developer ID, notarizes and staples it, checks it with Gatekeeper, and uploads the ZIP and its SHA-256 checksum to GitHub Releases. The release notes include a changelog of commits since the previous version tag.
 
-To publish a new version, first merge changes into `main`, then push a `vMAJOR.MINOR.PATCH` tag pointing to that commit. The workflow sets the app version from the tag and the build number from its GitHub Actions run number. Apple signing uses an App Store Connect API key stored as a GitHub Actions secret; no signing key is committed to this repository.
+To publish a new version, first merge changes into `main`, then push a `vMAJOR.MINOR.PATCH` tag pointing to that commit. The workflow sets the app version from the tag and the build number from its GitHub Actions run number. The Developer ID certificate and App Store Connect API key are stored as encrypted secrets in the tag-restricted `release` environment; no signing key is committed to this repository.
 
 ## License
 
