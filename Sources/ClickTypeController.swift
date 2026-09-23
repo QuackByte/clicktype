@@ -73,11 +73,10 @@ final class ClickTypeController {
 
 private enum KeyboardTyper {
     static func post(_ character: Character) {
-        switch character {
-        case "\n", "\r": postKey(code: 36) // Return
-        case "\t": postKey(code: 48)        // Tab
-        default:
-            let units = Array(String(character).utf16)
+        switch KeyboardStroke(character: character) {
+        case .key(let code):
+            postKey(code: code)
+        case .unicode(let units):
             guard let down = CGEvent(keyboardEventSource: nil, virtualKey: 0, keyDown: true),
                   let up = CGEvent(keyboardEventSource: nil, virtualKey: 0, keyDown: false) else { return }
             units.withUnsafeBufferPointer { buffer in

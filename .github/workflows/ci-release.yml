@@ -1,0 +1,134 @@
+name: Test and release
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Build and test macOS app
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Build and run unit tests
+        run: |
+          xcodebuild -version
+          xcodebuild -project ClickType.xcodeproj -scheme ClickType \
+            -configuration Debug -destination 'platform=macOS' \
+            -derivedDataPath "$RUNNER_TEMP/ClickTypeTests" \
+            CODE_SIGNING_ALLOWED=NO -parallel-testing-enabled NO test
+
+  release:
+    name: Sign, notarize, and publish
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: test
+    runs-on: macos-26
+    timeout-minutes: 90
+    permissions:
+      contents: write
+    concurrency:
+      group: release-${{ github.ref }}
+      cancel-in-progress: false
+    env:
+      ASC_KEY_ID: ${{ vars.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ vars.ASC_ISSUER_ID }}
+      ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+      GH_TOKEN: ${{ github.token }}
+      TEAM_ID: 435MC3786D
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check tag and prepare Apple key
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          git fetch origin main
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+          test -n "$ASC_KEY_ID"
+          test -n "$ASC_ISSUER_ID"
+          test -n "$ASC_PRIVATE_KEY"
+          printf '%s' "$ASC_PRIVATE_KEY" > "$RUNNER_TEMP/AuthKey_${ASC_KEY_ID}.p8"
+          chmod 600 "$RUNNER_TEMP/AuthKey_${ASC_KEY_ID}.p8"
+      - name: Archive unsigned app
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          xcodebuild -project ClickType.xcodeproj -scheme ClickType \
+            -configuration Release -destination 'generic/platform=macOS' \
+            -archivePath "$RUNNER_TEMP/ClickType.xcarchive" \
+            MARKETING_VERSION="$version" CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER" \
+            ARCHS=arm64 ONLY_ACTIVE_ARCH=NO CODE_SIGNING_ALLOWED=NO archive
+      - name: Export Developer ID signed app
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+          <key>method</key><string>developer-id</string>
+          <key>destination</key><string>export</string>
+          <key>signingStyle</key><string>automatic</string>
+          <key>teamID</key><string>${TEAM_ID}</string>
+          </dict></plist>
+          PLIST
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/ClickType.xcarchive" \
+            -exportPath "$RUNNER_TEMP/Export" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/AuthKey_${ASC_KEY_ID}.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+          codesign --verify --deep --strict "$RUNNER_TEMP/Export/ClickType.app"
+      - name: Notarize and package
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          app="$RUNNER_TEMP/Export/ClickType.app"
+          ditto -c -k --keepParent "$app" "$RUNNER_TEMP/ClickType-notary.zip"
+          xcrun notarytool submit "$RUNNER_TEMP/ClickType-notary.zip" \
+            --key "$RUNNER_TEMP/AuthKey_${ASC_KEY_ID}.p8" \
+            --key-id "$ASC_KEY_ID" --issuer "$ASC_ISSUER_ID" --wait
+          xcrun stapler staple "$app"
+          xcrun stapler validate "$app"
+          spctl --assess --type execute --verbose "$app"
+          ditto -c -k --keepParent "$app" "ClickType-${version}-macOS.zip"
+          shasum -a 256 "ClickType-${version}-macOS.zip" > "ClickType-${version}-macOS.zip.sha256"
+      - name: Write changelog and publish GitHub release
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          previous_tag="$(git tag --sort=-version:refname --list 'v*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | grep -v -x "$GITHUB_REF_NAME" | head -1 || true)"
+          {
+            printf 'ClickType %s for macOS 13 or later on Apple Silicon.\n\n' "$version"
+            printf 'Download the ZIP, extract it, and move ClickType.app to Applications. Grant Accessibility access when prompted. The app is Developer ID signed and notarized by Apple.\n\n'
+            printf '## Changelog\n\n'
+            if [ -n "$previous_tag" ]; then
+              git log --no-merges --format='- %s (%h)' "$previous_tag..$GITHUB_SHA"
+              printf '\n[Full changelog](https://github.com/%s/compare/%s...%s)\n' "$GITHUB_REPOSITORY" "$previous_tag" "$GITHUB_REF_NAME"
+            else
+              git log --no-merges --format='- %s (%h)' "$GITHUB_SHA"
+            fi
+            printf '\nThe SHA-256 asset contains the ZIP checksum.\n'
+          } > "$RUNNER_TEMP/ReleaseNotes.md"
+          gh release create "$GITHUB_REF_NAME" \
+            "ClickType-${version}-macOS.zip" \
+            "ClickType-${version}-macOS.zip.sha256" \
+            --verify-tag --title "ClickType $version" \
+            --notes-file "$RUNNER_TEMP/ReleaseNotes.md"

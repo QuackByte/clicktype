@@ -8,15 +8,30 @@
 
 /* Begin PBXBuildFile section */
 		0403E12F65B054690F39B1F1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F3CF36A9AE40AFC5FB67A844 /* Assets.xcassets */; };
+		279EEE48960A9E0B875FD519 /* KeyboardStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7138B12F48E2AF293A6063E6 /* KeyboardStroke.swift */; };
 		2D26DA24652F872589327D4D /* ClickTypeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401CDDE2F4F8DE149704E4AF /* ClickTypeApp.swift */; };
 		8F899BD876886144C97E30A4 /* ClickTypeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C3CC8DFC3CB33AFFA1F335 /* ClickTypeController.swift */; };
+		D1A5873F8CC26045F51DDDC9 /* KeyboardStrokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9127DE09658E520CB64732 /* KeyboardStrokeTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1EB97ACA3432FE643A9251C3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 536375F04AE52ED23C0C2279 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 67D9A7438A8072901919E6BF;
+			remoteInfo = ClickType;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		08C3CC8DFC3CB33AFFA1F335 /* ClickTypeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickTypeController.swift; sourceTree = "<group>"; };
 		2F91F0B64AFDB402A841F3BA /* ClickType.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClickType.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		401CDDE2F4F8DE149704E4AF /* ClickTypeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickTypeApp.swift; sourceTree = "<group>"; };
+		7138B12F48E2AF293A6063E6 /* KeyboardStroke.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardStroke.swift; sourceTree = "<group>"; };
+		BB55A986D8AB22EF01F6D6B5 /* ClickTypeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClickTypeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3CF36A9AE40AFC5FB67A844 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FF9127DE09658E520CB64732 /* KeyboardStrokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardStrokeTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -25,6 +40,7 @@
 			children = (
 				F3CF36A9AE40AFC5FB67A844 /* Assets.xcassets */,
 				7FD89151C64E37C8903DFF4A /* Sources */,
+				B2C747FE4789A00C411717A6 /* Tests */,
 				927351F41E7831AEF84C393A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -34,6 +50,7 @@
 			children = (
 				401CDDE2F4F8DE149704E4AF /* ClickTypeApp.swift */,
 				08C3CC8DFC3CB33AFFA1F335 /* ClickTypeController.swift */,
+				7138B12F48E2AF293A6063E6 /* KeyboardStroke.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -42,13 +59,40 @@
 			isa = PBXGroup;
 			children = (
 				2F91F0B64AFDB402A841F3BA /* ClickType.app */,
+				BB55A986D8AB22EF01F6D6B5 /* ClickTypeTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		B2C747FE4789A00C411717A6 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				FF9127DE09658E520CB64732 /* KeyboardStrokeTests.swift */,
+			);
+			path = Tests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		1ACEF8EAA196EB897B0A117C /* ClickTypeTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A2E8403B683FA62AAF7A2898 /* Build configuration list for PBXNativeTarget "ClickTypeTests" */;
+			buildPhases = (
+				FC7FC23BE4A7970C96315E16 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5B0A7C4FDC678E8EE0FC35FB /* PBXTargetDependency */,
+			);
+			name = ClickTypeTests;
+			packageProductDependencies = (
+			);
+			productName = ClickTypeTests;
+			productReference = BB55A986D8AB22EF01F6D6B5 /* ClickTypeTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		67D9A7438A8072901919E6BF /* ClickType */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3286D0D24823DD2B740D2957 /* Build configuration list for PBXNativeTarget "ClickType" */;
@@ -76,6 +120,10 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					1ACEF8EAA196EB897B0A117C = {
+						DevelopmentTeam = 435MC3786D;
+						ProvisioningStyle = Automatic;
+					};
 					67D9A7438A8072901919E6BF = {
 						DevelopmentTeam = 435MC3786D;
 						ProvisioningStyle = Automatic;
@@ -97,6 +145,7 @@
 			projectRoot = "";
 			targets = (
 				67D9A7438A8072901919E6BF /* ClickType */,
+				1ACEF8EAA196EB897B0A117C /* ClickTypeTests */,
 			);
 		};
 /* End PBXProject section */
@@ -119,10 +168,27 @@
 			files = (
 				2D26DA24652F872589327D4D /* ClickTypeApp.swift in Sources */,
 				8F899BD876886144C97E30A4 /* ClickTypeController.swift in Sources */,
+				279EEE48960A9E0B875FD519 /* KeyboardStroke.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FC7FC23BE4A7970C96315E16 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D1A5873F8CC26045F51DDDC9 /* KeyboardStrokeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5B0A7C4FDC678E8EE0FC35FB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 67D9A7438A8072901919E6BF /* ClickType */;
+			targetProxy = 1EB97ACA3432FE643A9251C3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		4F77FB8A76403029265E30D5 /* Release */ = {
@@ -185,6 +251,40 @@
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
+		};
+		534766A0F61BA562CAEA7F75 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.quackbyte.clicktype.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ClickType.app/Contents/MacOS/ClickType";
+			};
+			name = Release;
+		};
+		711B8518CC69AAC9D073E888 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.quackbyte.clicktype.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ClickType.app/Contents/MacOS/ClickType";
+			};
+			name = Debug;
 		};
 		9EACCD878A4128CB94CFA8E3 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -302,6 +402,15 @@
 			buildConfigurations = (
 				AE0028BF350FFF22A0331F64 /* Debug */,
 				FB5534F89ED39246468A8728 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A2E8403B683FA62AAF7A2898 /* Build configuration list for PBXNativeTarget "ClickTypeTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				711B8518CC69AAC9D073E888 /* Debug */,
+				534766A0F61BA562CAEA7F75 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

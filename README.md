@@ -1,5 +1,7 @@
 # ClickType
 
+![CI](https://github.com/QuackByte/clicktype/actions/workflows/ci-release.yml/badge.svg)
+
 ![ClickType app icon](Assets.xcassets/AppIcon.appiconset/icon_128.png)
 
 ClickType is a small macOS menu bar app that types the plain-text contents of your clipboard into the app you were using. Copy text, put the caret where you want it, and click the keycap icon in the menu bar. ClickType sends keyboard events character by character, which can help when ordinary paste is unavailable.
@@ -42,6 +44,12 @@ xcodebuild -project ClickType.xcodeproj -scheme ClickType \
 ```
 
 The checked-in Xcode project is generated from [`project.yml`](project.yml) with XcodeGen. The app uses AppKit, SwiftUI, Core Graphics, and ServiceManagement, with no third-party runtime dependencies. Release signing is configured for bundle ID `dev.quackbyte.clicktype` and team `435MC3786D`; contributors can override signing settings for their own builds. Publishing a release requires Developer ID signing and Apple notarization.
+
+## CI and releases
+
+[GitHub Actions](.github/workflows/ci-release.yml) builds the app and runs unit tests on pull requests, pushes to `main`, and version tags. A tag such as `v1.0.1` starts the release job only after tests pass. It exports a Developer ID signed Apple Silicon app, notarizes and staples it, checks it with Gatekeeper, and uploads the ZIP and its SHA-256 checksum to GitHub Releases. The release notes include a changelog of commits since the previous version tag.
+
+To publish a new version, first merge changes into `main`, then push a `vMAJOR.MINOR.PATCH` tag pointing to that commit. The workflow sets the app version from the tag and the build number from its GitHub Actions run number. Apple signing uses an App Store Connect API key stored as a GitHub Actions secret; no signing key is committed to this repository.
 
 ## License
 

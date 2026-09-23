@@ -16,6 +16,9 @@ targets:
   ClickType:
     type: application
     platform: macOS
+    scheme:
+      testTargets:
+        - ClickTypeTests
     sources:
       - path: Sources
       - path: Assets.xcassets
@@ -29,3 +32,14 @@ targets:
         INFOPLIST_KEY_NSPrincipalClass: NSApplication
         ENABLE_APP_SANDBOX: NO
         CODE_SIGNING_ALLOWED: YES
+  ClickTypeTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: Tests
+    dependencies:
+      - target: ClickType
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: dev.quackbyte.clicktype.tests
