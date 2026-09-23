@@ -13,4 +13,10 @@ The app reads the clipboard when its menu bar icon is clicked. Ordinary clicks e
 
 ## Build
 
-Xcode 15 or later is required. The checked-in Xcode project is generated from `project.yml` with XcodeGen. The target uses AppKit, SwiftUI, Core Graphics, and ServiceManagement, has no third-party runtime dependencies, and does not use App Sandbox because it needs to send keystrokes to other apps.
+Xcode 15 or later is required. The checked-in Xcode project is generated from `project.yml` with XcodeGen. The target uses AppKit, SwiftUI, Core Graphics, and ServiceManagement, has no third-party runtime dependencies, and does not use App Sandbox because it needs to send keystrokes to other apps. The release target uses bundle ID `dev.quackbyte.clicktype`, team `435MC3786D`, automatic signing, and version `1.0` (build `1`).
+
+## Distribution
+
+The current keyboard-typing feature requires Accessibility access and posts keyboard events to other apps. Apple requires App Sandbox for Mac App Store distribution and restricts assistive Accessibility APIs in sandboxed apps. Do not submit the current build to the Mac App Store or enable App Sandbox without first implementing and testing a compatible design. Developer ID distribution outside the store supports the current behavior; notarize release builds before sharing them.
+
+Xcode Cloud can archive and sign macOS apps for Developer ID distribution. Its first workflow must be configured in Xcode and granted access to the Git repository. Commit and push the Xcode project settings before creating that workflow.
