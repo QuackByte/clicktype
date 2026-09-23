@@ -31,7 +31,9 @@ final class ClickTypeAppDelegate: NSObject, NSApplicationDelegate {
 
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         guard let button = statusItem.button else { return }
-        button.image = NSImage(systemSymbolName: "keyboard", accessibilityDescription: "ClickType")
+        button.image = NSImage(named: "MenuBarIcon")
+        button.image?.size = NSSize(width: 22, height: 22)
+        button.image?.accessibilityDescription = "ClickType"
         button.toolTip = "Click to type clipboard text · Right-click for options"
         button.target = self
         button.action = #selector(statusItemClicked(_:))
